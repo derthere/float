@@ -42,7 +42,7 @@ if (sensor < 230){  //turn LED green VOC
     digitalWrite(BLUEPin, HIGH);
   }
    
- // if (40< sensor< 80){ yellow ozone
+ // if (40< sensor && sensor < 80){ yellow ozone
    if (230< sensor< 250){ // yellow VOC
 //  if (220 > sensor > 180){ //turn LED yellow  CO
   
@@ -51,7 +51,7 @@ if (sensor < 230){  //turn LED green VOC
     digitalWrite(BLUEPin, HIGH);
   }
     
-    //if (80 < sensor < 150){ //turn LED red OZONE
+    //if (80 < sensor && sensor < 150){ //turn LED red OZONE
       if (250< sensor< 300){ //red VOC
  //   if (140 < sensor < 180){ //turn LED red CO
   
