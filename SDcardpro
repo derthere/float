@@ -1,0 +1,112 @@
+
+//code for float module v2 with sd card and RGB LED
+//write files to SD card and stores sensor readings at set intervals
+
+#include <SD.h>
+
+int REDPin = 7;    // RED pin of the LED to PWM pin 4
+int GREENPin = 8;  // GREEN pin of the LED to PWM pin 5
+int BLUEPin = 9;   // BLUE pin of the LED to PWM pin 6
+
+int aqsensor= 0;
+const int chipSelect = 4;
+String stringval;
+
+
+void setup()
+{
+  
+  //rgb led pins
+  pinMode(REDPin, OUTPUT);
+  pinMode(GREENPin, OUTPUT);
+  pinMode(BLUEPin, OUTPUT);
+  Serial.begin(9600);
+     while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
+
+
+ Serial.print("Initializing SD card...");
+  // make sure that the default chip select pin is set to
+  // output, even if you don't use it:
+  pinMode(4, OUTPUT);
+  
+  // see if the card is present and can be initialized:
+  if (!SD.begin(chipSelect)) {
+    Serial.println("Card failed, or not present");
+    // don't do anything more:
+    return;
+  }
+  Serial.println("card initialized.");
+ 
+}
+
+void loop()
+{
+   aqsensor= analogRead(A0);
+   String dataString = " ";
+
+  // read three sensors and append to the string:
+
+    dataString += String(aqsensor);
+    
+    //COLORS
+
+if (aqsensor < 50){  //turn LED green VOC
+    
+    digitalWrite(REDPin, LOW);
+    digitalWrite(GREENPin, HIGH);
+    digitalWrite(BLUEPin, LOW);
+    stringval = "good";
+  }
+   
+
+ else if  (aqsensor<60){ // yellow VOC
+
+  
+    digitalWrite(REDPin, HIGH);
+    digitalWrite(GREENPin, HIGH);
+    digitalWrite(BLUEPin, LOW);
+    stringval = "moderate";
+  }
+  
+   else if (60< aqsenso && aqsensor < 80){ //red VOC
+  
+    digitalWrite(REDPin, HIGH);
+    digitalWrite(GREENPin, LOW);
+    digitalWrite(BLUEPin, LOW);
+    stringval = "unhealthy";    
+  }
+   
+   else if (aqsensor > 80){ // pink VOC
+
+  
+    digitalWrite(REDPin, HIGH);
+    digitalWrite(GREENPin, LOW);
+    digitalWrite(BLUEPin, HIGH);
+    stringval = "hazardous";
+  }
+ dataString += " = ";
+ dataString += stringval;
+ 
+ 
+  // open the file. note that only one file can be open at a time,
+  // so you have to close this one before opening another.
+  File dataFile = SD.open("mq135log.txt", FILE_WRITE);
+
+  // if the file is available, write to it:
+  if (dataFile) {
+    dataFile.println(dataString);
+    dataFile.close();
+    // print to the serial port too:
+   Serial.println(dataString);
+  }  
+  // if the file isn't open, pop up an error:
+  else {
+    Serial.println("error opening datalog.txt");
+  } 
+  
+  delay(500); // suggest one minute- short intervals for debugging
+
+}
+
